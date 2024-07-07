@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todoapp/utils/dialog_box.dart';
 import 'package:todoapp/utils/todo_tile.dart';
 
@@ -10,6 +11,9 @@ class HomePageState extends StatefulWidget {
 }
 
 class _HomePageStateState extends State<HomePageState> {
+  //reference the hive box
+  final _mybox = Hive.openBox('myBox');
+
   //text controller
   final _controller = TextEditingController();
 
@@ -48,19 +52,26 @@ class _HomePageStateState extends State<HomePageState> {
     );
   }
 
+  //delete task
+  void deleteTask(int index) {
+    setState(() {
+      toDoLists.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.yellow[200],
       appBar: AppBar(
-        title: Center(child: Text('TO DO')),
+        title: const Center(child: Text('TO DO')),
         elevation: 0,
         backgroundColor: Colors.yellow,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: createNewTask,
-        child: const Icon(Icons.add),
         backgroundColor: Colors.yellow,
+        child: const Icon(Icons.add),
       ),
       body: ListView.builder(
         itemCount: toDoLists.length,
@@ -69,6 +80,7 @@ class _HomePageStateState extends State<HomePageState> {
             taskName: toDoLists[index][0],
             taskCompleted: toDoLists[index][1],
             onChanged: (value) => checkBoxChanged(value, index),
+            deleteFunction: (context) => deleteTask(index),
           );
         },
       ),
